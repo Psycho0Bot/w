@@ -223,8 +223,6 @@ Personalized AI Insights
 - Tax
 - Import
 
-(Add screenshots here)
-
 ---
 
 # 💻 Tech Stack
@@ -265,12 +263,6 @@ Personalized AI Insights
 - CoinGecko
 - AMFI
 - Financial News APIs
-
----
-
-## Deployment
-
-- Vercel
 
 ---
 
