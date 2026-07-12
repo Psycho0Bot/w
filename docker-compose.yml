@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: wealthos-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-wealthos_user}
+      POSTGRES_PASSWORD: ${POSTGRES_DB_PASS}
+      POSTGRES_DB: wealthos_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wealthos-app
+    restart: always
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_URL: postgresql://wealthos_user:${POSTGRES_DB_PASS}@db:5432/wealthos_db?schema=public
+      AUTH_SECRET: ${AUTH_SECRET}
+      NODE_ENV: production
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

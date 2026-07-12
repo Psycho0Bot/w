@@ -1,0 +1,45 @@
+name: WealthOS Continuous Integration
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    name: Build & Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-node: '20'
+          cache: 'npm'
+
+      - name: Install Project Dependencies
+        run: npm ci
+
+      - name: Set Environment Mock variables
+        run: |
+          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test?schema=public" >> $GITHUB_ENV
+          echo "AUTH_SECRET=mock_secret_longer_than_eight_chars" >> $GITHUB_ENV
+
+      - name: Verify Prisma Schema Validation
+        run: npx prisma validate
+
+      - name: Run ESLint Checks
+        run: npm run lint
+
+      - name: Run TypeScript Verification
+        run: npx tsc --noEmit
+
+      - name: Run Test Suites (Vitest)
+        run: npx vitest run
+
+      - name: Verify Production Compilation
+        run: npm run build
